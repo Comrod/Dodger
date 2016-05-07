@@ -15,7 +15,7 @@ class GameScene: SKScene {
     var character = SKSpriteNode()
     var motionManager = CMMotionManager()
     
-    var difficulty = 0.5
+    var difficulty = 0.2
     
     //Device Attitude Vars
     var attitudeX:CGFloat = 0.0
@@ -98,7 +98,7 @@ class GameScene: SKScene {
         projectile.xScale = 2
         projectile.yScale = 2
         
-        var projectileSpeed = NSTimeInterval(randRange(1, upper: 3))
+        var projectileSpeed = NSTimeInterval(randRange(2, upper: 5))
         
         
         let lowerX = Int(projectile.size.width)
@@ -165,11 +165,9 @@ class GameScene: SKScene {
         addChild(projectile)
         
         let actionMove = SKAction.moveTo(CGPointMake(size.width + projectile.size.width, endY), duration: projectileSpeed)
-        //let actionMove = SKAction.moveTo(CGPointMake(endX, endY), duration: 3)
         let actionMoveDone = SKAction.removeFromParent()
         projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        
-        //return (startX, startY, endX, endY)
+
     }
     
     func randRange (lower: Int , upper: Int) -> Int {
