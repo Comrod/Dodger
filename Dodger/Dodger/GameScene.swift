@@ -51,26 +51,13 @@ class GameScene: SKScene {
             })
         }
         
-        //Gyroscope
-        /*if motionManager.gyroAvailable {
-            //motionManager.startGyroUpdates()
-            
-            motionManager.startGyroUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler:
-                {(gyroData, error) in
-                    //self.motionManager.gyroData?.rotationRate
-                    if (error != nil) {
-                        print("\(error)")
-                    }
-                self.getRotationData(self.motionManager.gyroData!.rotationRate)
-                //var moveCharacter = SKAction.applyForce(CGVectorMake(self.rotX*100, self.rotY*100), duration: 1)
-                print(self.motionManager.gyroData!.rotationRate)
-                var moveCharacter = SKAction.moveBy(CGVectorMake(-self.rotX*5, -self.rotY*5), duration: 1)
-                self.character.runAction(moveCharacter)
-                    
-                
-            })
-        }*/
-        
+        //Add Projectiles
+        runAction(SKAction.repeatActionForever(
+            SKAction.sequence([
+                SKAction.runBlock(addProjectile),
+                SKAction.waitForDuration(1.0)
+                ])
+            ))
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -102,36 +89,34 @@ class GameScene: SKScene {
         attitudeX = CGFloat(attitude.pitch)
         attitudeY = CGFloat(attitude.roll)
     }
+
     
-    /*func getRotationData(rotation:CMRotationRate) {
-        
-        //X-Axis
-        rotX = CGFloat(rotation.x)
-        
-        //Y-Axis
-        rotY = CGFloat(rotation.y)
-        
-    }*/
-    
-    
-    /*func addProjectile() {
+    func addProjectile() {
         let projectile = SKSpriteNode(imageNamed: "locationIndicator")
+        projectile.xScale = 2
+        projectile.yScale = 2
         
-        let lowerX = CGRectZero.minX
-        let upperX = size.width
-        let actualX = Int(arc4random_uniform(UInt32(upperX - lowerX)) + UInt32(lowerX))
+        let lowerX = Int(projectile.size.width)
+        let upperX = Int(size.width)
+        let actualX = randRange(lowerX, upper: upperX)
         
-        let upperY = CGRectZero.minY
-        let lowerY = size.height
-        let actualY = Int(arc4random_uniform(UInt32(upperY - lowerY)) + UInt32(lowerY))
+        let lowerY = Int(projectile.size.height)
+        let upperY = Int(size.height)
+        let actualY = randRange(lowerY, upper: upperY)
         
-        projectile.position = CGPointMake(CGFloat(actualX), CGFloat(actualY))
+        projectile.position = CGPointMake(size.width + projectile.size.width/2, CGFloat(actualY))
         
         addChild(projectile)
         
-        let actualDur = 3
+        let actualDur:NSTimeInterval = 3
+        let actionMove = SKAction.moveTo(CGPointMake(-projectile.size.width/2, CGFloat(actualY)), duration: actualDur)
+        let actionMoveDone = SKAction.removeFromParent()
+        projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         
-    }*/
+    }
     
+    func randRange (lower: Int , upper: Int) -> Int {
+        return lower + Int(arc4random_uniform(UInt32(upper - lower + 1)))
+    }
     
 }
