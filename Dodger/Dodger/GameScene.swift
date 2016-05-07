@@ -19,9 +19,13 @@ class GameScene: SKScene {
     var destX:CGFloat = 0.0
     var destY:CGFloat = 0.0
     
+    //Device Attitude Vars
+    var attitudeX:CGFloat = 0.0
+    var attitudeY: CGFloat = 0.0
+    
     //Gyroscope Vars
-    var rotX = CGFloat()
-    var rotY = CGFloat()
+    var rotX:CGFloat = 0.0
+    var rotY:CGFloat = 0.0
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
@@ -29,26 +33,43 @@ class GameScene: SKScene {
         //Character Setup
         character = SKSpriteNode(imageNamed: "locationIndicator")
         character.position = CGPointMake(CGRectGetMidX(self.frame)/2, CGRectGetMidY(self.frame))
-        character.xScale = 2
-        character.yScale = 2
+        character.xScale = 4
+        character.yScale = 4
         self.addChild(character)
         
-        //Gyroscope
-        motionManager.gyroUpdateInterval = 0.2
+        //Device Motion
+        if motionManager.deviceMotionAvailable {
+            motionManager.startDeviceMotionUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: { (deviceMotionData, error) in
+                if (error != nil) {
+                    print("\(error)")
+                }
+                
+                self.getAttitudeData(self.motionManager.deviceMotion!.attitude)
+                print(self.motionManager.deviceMotion!.attitude)
+                var moveCharacter = SKAction.moveBy(CGVectorMake(-self.attitudeX*10, -self.attitudeY*10), duration: 0.1)
+                self.character.runAction(moveCharacter)
+            })
+        }
         
-        if motionManager.gyroAvailable {
-            motionManager.startGyroUpdates()
+        //Gyroscope
+        /*if motionManager.gyroAvailable {
+            //motionManager.startGyroUpdates()
             
-            /*motionManager.startGyroUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler:
+            motionManager.startGyroUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler:
                 {(gyroData, error) in
-                    self.motionManager.gyroData?.rotationRate
+                    //self.motionManager.gyroData?.rotationRate
                     if (error != nil) {
                         print("\(error)")
                     }
+                self.getRotationData(self.motionManager.gyroData!.rotationRate)
+                //var moveCharacter = SKAction.applyForce(CGVectorMake(self.rotX*100, self.rotY*100), duration: 1)
+                print(self.motionManager.gyroData!.rotationRate)
+                var moveCharacter = SKAction.moveBy(CGVectorMake(-self.rotX*5, -self.rotY*5), duration: 1)
+                self.character.runAction(moveCharacter)
                     
                 
-            })*/
-        }
+            })
+        }*/
         
     }
     
@@ -74,13 +95,15 @@ class GameScene: SKScene {
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
-        getRotationData(motionManager.gyroData!.rotationRate)
-        var moveCharacter = SKAction.applyForce(CGVectorMake(rotX, rotY), duration: 1)
         
-        self.character.runAction(moveCharacter)
     }
     
-    func getRotationData(rotation:CMRotationRate) {
+    func getAttitudeData(attitude:CMAttitude) {
+        attitudeX = CGFloat(attitude.pitch)
+        attitudeY = CGFloat(attitude.roll)
+    }
+    
+    /*func getRotationData(rotation:CMRotationRate) {
         
         //X-Axis
         rotX = CGFloat(rotation.x)
@@ -88,7 +111,7 @@ class GameScene: SKScene {
         //Y-Axis
         rotY = CGFloat(rotation.y)
         
-    }
+    }*/
     
     
     /*func addProjectile() {
