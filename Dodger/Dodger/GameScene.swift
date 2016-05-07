@@ -56,7 +56,7 @@ class GameScene: SKScene {
         //Add Projectiles
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
-                SKAction.runBlock(addProjectile),
+                SKAction.runBlock(projectileFlightCalc),
                 SKAction.waitForDuration(difficulty)
                 ])
             ))
@@ -92,13 +92,13 @@ class GameScene: SKScene {
         attitudeY = CGFloat(attitude.roll)
     }
 
-    //Does all the fun calculations for projectile flight
-    func projectileFlightCalc() {//-> (startX: CGFloat, startY: CGFloat, endX: CGFloat, endY: CGFloat) {
+    //Add Projectiles
+    func projectileFlightCalc() {
         let projectile = SKSpriteNode(imageNamed: "locationIndicator")
         projectile.xScale = 2
         projectile.yScale = 2
         
-        //var projectileSpeed = NSTimeInterval(randRange(1, upper: 3))
+        var projectileSpeed = NSTimeInterval(randRange(1, upper: 3))
         
         
         let lowerX = Int(projectile.size.width)
@@ -162,101 +162,14 @@ class GameScene: SKScene {
         print("Start position:")
         print(projectile.position)
         
-        let actionMove = SKAction.moveTo(CGPointMake(size.width + projectile.size.width, endY), duration: 3)
+        addChild(projectile)
+        
+        let actionMove = SKAction.moveTo(CGPointMake(size.width + projectile.size.width, endY), duration: projectileSpeed)
         //let actionMove = SKAction.moveTo(CGPointMake(endX, endY), duration: 3)
         let actionMoveDone = SKAction.removeFromParent()
         projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
         
         //return (startX, startY, endX, endY)
-    }
-    
-    func addProjectile() {
-        let projectile = SKSpriteNode(imageNamed: "locationIndicator")
-        projectile.xScale = 2
-        projectile.yScale = 2
-        
-        var projectileSpeed = NSTimeInterval(randRange(1, upper: 3))
-
-        /*//Do Calculations
-        projectileFlightCalc()
-        
-        print("Position startx:")
-        //print(projectileFlightCalc().startX)
-        
-        //projectile.position = CGPointMake(projectileFlightCalc().startX, projectileFlightCalc().startY)
-        print("Start position:")
-        print(projectile.position)
-        
-        //let actionMove = SKAction.moveTo(CGPointMake(projectileFlightCalc().endX, projectileFlightCalc().endY), duration: projectileSpeed)
-        
-        
-        let actionMoveDone = SKAction.removeFromParent()
-        //projectile.runAction(actionMove)
-        print("Final position (hopefully):")
-        print(projectile.position)
-        projectile.runAction((actionMoveDone))*/
-        
-        //projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        
-        let lowerX = Int(projectile.size.width)
-        let upperX = Int(size.width)
-        let actualX = CGFloat(randRange(lowerX, upper: upperX))
-        
-        let lowerY = Int(projectile.size.height)
-        let upperY = Int(size.height)
-        let actualY = CGFloat(randRange(lowerY, upper: upperY))
-        
-        var whichSide = Int(arc4random_uniform(UInt32(4)))
-        
-        //Right Side
-        if (whichSide == 0) {
-            print("Right Side")
-            projectile.position = CGPointMake(size.width + projectile.size.width, actualY)
-            
-            addChild(projectile)
-            
-            let actualDur:NSTimeInterval = projectileSpeed
-            let actionMove = SKAction.moveTo(CGPointMake(-projectile.size.width, actualY), duration: actualDur)
-            let actionMoveDone = SKAction.removeFromParent()
-            projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        }
-        //Top Side
-        else if (whichSide == 1) {
-            print("Top Side")
-            projectile.position = CGPointMake(actualX, size.height + projectile.size.height)
-            
-            addChild(projectile)
-            
-            let actualDur:NSTimeInterval = projectileSpeed
-            let actionMove = SKAction.moveTo(CGPointMake(actualX, -projectile.size.height), duration: actualDur)
-            let actionMoveDone = SKAction.removeFromParent()
-            projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        }
-        //Left Side
-        else if (whichSide == 2) {
-            print("Left Side")
-            projectile.position = CGPointMake(-projectile.size.width, actualY)
-            
-            addChild(projectile)
-            
-            let actualDur:NSTimeInterval = projectileSpeed
-            let actionMove = SKAction.moveTo(CGPointMake(size.width + projectile.size.width, CGFloat(actualY)), duration: actualDur)
-            let actionMoveDone = SKAction.removeFromParent()
-            projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        }
-        //Bottom Side
-        else if (whichSide == 3) {
-            print("Bottom Side")
-            projectile.position = CGPointMake(actualX, -projectile.size.height)
-            
-            addChild(projectile)
-            
-            let actualDur:NSTimeInterval = projectileSpeed
-            let actionMove = SKAction.moveTo(CGPointMake(actualX, size.height + projectile.size.height), duration: actualDur)
-            let actionMoveDone = SKAction.removeFromParent()
-            projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
-        }
-        
     }
     
     func randRange (lower: Int , upper: Int) -> Int {
