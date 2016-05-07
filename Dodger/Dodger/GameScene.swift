@@ -9,20 +9,47 @@
 import SpriteKit
 import CoreMotion
 
+
 class GameScene: SKScene {
     
-    let manager = CMMotionManager()
+    var character = SKSpriteNode()
+    var motionManager = CMMotionManager()
+    
+    //For SKAction
+    var destX:CGFloat = 0.0
+    var destY:CGFloat = 0.0
+    
+    //Gyroscope Vars
+    var rotX = CGFloat()
+    var rotY = CGFloat()
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
 
         //Character Setup
-        let character = SKSpriteNode(imageNamed: "locationIndicator")
-        character.position = CGPoint(x: CGRectGetMidX(self.frame)/2, y: CGRectGetMidY(self.frame))
+        character = SKSpriteNode(imageNamed: "locationIndicator")
+        character.position = CGPointMake(CGRectGetMidX(self.frame)/2, CGRectGetMidY(self.frame))
         character.xScale = 2
         character.yScale = 2
-        
         self.addChild(character)
+        
+        //Gyroscope
+        motionManager.gyroUpdateInterval = 0.2
+        
+        if motionManager.gyroAvailable {
+            motionManager.startGyroUpdates()
+            
+            /*motionManager.startGyroUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler:
+                {(gyroData, error) in
+                    self.motionManager.gyroData?.rotationRate
+                    if (error != nil) {
+                        print("\(error)")
+                    }
+                    
+                
+            })*/
+        }
+        
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -47,8 +74,21 @@ class GameScene: SKScene {
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+        getRotationData(motionManager.gyroData!.rotationRate)
+        var moveCharacter = SKAction.applyForce(CGVectorMake(rotX, rotY), duration: 1)
+        
+        self.character.runAction(moveCharacter)
     }
     
+    func getRotationData(rotation:CMRotationRate) {
+        
+        //X-Axis
+        rotX = CGFloat(rotation.x)
+        
+        //Y-Axis
+        rotY = CGFloat(rotation.y)
+        
+    }
     
     
     /*func addProjectile() {
