@@ -27,11 +27,24 @@ class GameScene: SKScene {
     var endX = CGFloat()
     var endY = CGFloat()
     
-    
+    //Score
+    var scoreTimer:NSTimer!
+    var timeForScoreMili:Int = 0
+    var scoreLabel = SKLabelNode()
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
 
+        //Score
+        timeForScoreMili = 0
+        scoreTimer = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: #selector(GameScene.scoreIncrement), userInfo: nil, repeats: true)
+        scoreLabel = SKLabelNode(fontNamed: "ArialMT")
+        scoreLabel.text = "0.0"
+        scoreLabel.position = CGPointMake(CGRectGetMidX(self.frame)/4, CGRectGetMidY(self.frame)/(2/3))
+        scoreLabel.fontSize = 30
+        scoreLabel.color = SKColor.blackColor()
+        self.addChild(scoreLabel)
+        
         //Character Setup
         character = SKSpriteNode(imageNamed: "locationIndicator")
         character.position = CGPointMake(CGRectGetMidX(self.frame)/2, CGRectGetMidY(self.frame))
@@ -39,8 +52,7 @@ class GameScene: SKScene {
         character.yScale = 4
         self.addChild(character)
         
-        
-        //Device Motion
+        //Character Motion
         if motionManager.deviceMotionAvailable {
             motionManager.startDeviceMotionUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: { (deviceMotionData, error) in
                 if (error != nil) {
@@ -66,7 +78,7 @@ class GameScene: SKScene {
        /* Called when a touch begins */
         
         for touch in touches {
-            let location = touch.locationInNode(self)
+            /*let location = touch.locationInNode(self)
             
             let sprite = SKSpriteNode(imageNamed:"Spaceship")
             
@@ -78,13 +90,22 @@ class GameScene: SKScene {
             
             sprite.runAction(SKAction.repeatActionForever(action))
             
-            self.addChild(sprite)
+            self.addChild(sprite)*/
         }
     }
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
         
+    }
+    
+    func scoreIncrement() {
+        timeForScoreMili += 1
+        var miliForLabel = timeForScoreMili % 100
+        var seconds = (timeForScoreMili/100) % 60
+        var minutes = (timeForScoreMili/100) / 60
+        
+        scoreLabel.text = String(format: "%02d.%02d.%02d", minutes, seconds, miliForLabel)
     }
     
     func getAttitudeData(attitude:CMAttitude) {
@@ -94,7 +115,7 @@ class GameScene: SKScene {
 
     //Add Projectiles
     func projectileFlightCalc() {
-        let projectile = SKSpriteNode(imageNamed: "locationIndicator")
+        let projectile = SKSpriteNode(imageNamed: "projectile")
         projectile.xScale = 2
         projectile.yScale = 2
         

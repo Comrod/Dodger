@@ -19,6 +19,7 @@
 		2411C0A21CDADDCC00328D11 /* locationIndicator.png in Resources */ = {isa = PBXBuildFile; fileRef = 2411C0A01CDADDCC00328D11 /* locationIndicator.png */; };
 		2411C0A31CDADDCC00328D11 /* locationIndicator@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2411C0A11CDADDCC00328D11 /* locationIndicator@2x.png */; };
 		2411C0A51CDBC5FC00328D11 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2411C0A41CDBC5FC00328D11 /* CoreMotion.framework */; };
+		24FD31211CDDA032007D21BF /* projectile.png in Resources */ = {isa = PBXBuildFile; fileRef = 24FD31201CDDA032007D21BF /* projectile.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		2411C0A01CDADDCC00328D11 /* locationIndicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = locationIndicator.png; sourceTree = "<group>"; };
 		2411C0A11CDADDCC00328D11 /* locationIndicator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "locationIndicator@2x.png"; sourceTree = "<group>"; };
 		2411C0A41CDBC5FC00328D11 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		24FD31201CDDA032007D21BF /* projectile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = projectile.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 				2411C07E1CDADDAB00328D11 /* Info.plist */,
 				2411C0A01CDADDCC00328D11 /* locationIndicator.png */,
 				2411C0A11CDADDCC00328D11 /* locationIndicator@2x.png */,
+				24FD31201CDDA032007D21BF /* projectile.png */,
 			);
 			path = Dodger;
 			sourceTree = "<group>";
@@ -249,6 +252,7 @@
 				2411C0A31CDADDCC00328D11 /* locationIndicator@2x.png in Resources */,
 				2411C0711CDADDAA00328D11 /* GameScene.sks in Resources */,
 				2411C07D1CDADDAB00328D11 /* LaunchScreen.storyboard in Resources */,
+				24FD31211CDDA032007D21BF /* projectile.png in Resources */,
 				2411C07A1CDADDAB00328D11 /* Assets.xcassets in Resources */,
 				2411C0781CDADDAB00328D11 /* Main.storyboard in Resources */,
 			);
@@ -506,6 +510,7 @@
 				2411C0991CDADDAB00328D11 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2411C09A1CDADDAB00328D11 /* Build configuration list for PBXNativeTarget "DodgerTests" */ = {
 			isa = XCConfigurationList;
@@ -514,6 +519,7 @@
 				2411C09C1CDADDAB00328D11 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2411C09D1CDADDAB00328D11 /* Build configuration list for PBXNativeTarget "DodgerUITests" */ = {
 			isa = XCConfigurationList;
@@ -522,6 +528,7 @@
 				2411C09F1CDADDAB00328D11 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
