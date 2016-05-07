@@ -9,8 +9,14 @@
 import SpriteKit
 import CoreMotion
 
+struct PhysicsCategory {
+    static let None      : UInt32 = 0
+    static let All       : UInt32 = UInt32.max
+    static let Character : UInt32 = 0b1       // 1
+    static let Projectile: UInt32 = 0b10      // 2
+}
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var character = SKSpriteNode()
     var motionManager = CMMotionManager()
@@ -31,10 +37,12 @@ class GameScene: SKScene {
     var scoreTimer:NSTimer!
     var timeForScoreMili:Int = 0
     var scoreLabel = SKLabelNode()
+    var scoreLabelString:String!
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
 
+        
         //Score
         timeForScoreMili = 0
         scoreTimer = NSTimer.scheduledTimerWithTimeInterval(0.01, target: self, selector: #selector(GameScene.scoreIncrement), userInfo: nil, repeats: true)
@@ -50,7 +58,18 @@ class GameScene: SKScene {
         character.position = CGPointMake(CGRectGetMidX(self.frame)/2, CGRectGetMidY(self.frame))
         character.xScale = 4
         character.yScale = 4
+        
+        character.physicsBody = SKPhysicsBody(circleOfRadius: character.size.height/2)
+        character.physicsBody?.dynamic = true
+        character.physicsBody?.categoryBitMask = PhysicsCategory.Character //What category the projectile belongs to
+        character.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile //What category it interacts with
+        character.physicsBody?.collisionBitMask = PhysicsCategory.None //What category bounces off of it
+        
         self.addChild(character)
+        
+        //Physics World
+        physicsWorld.gravity = CGVectorMake(0, 0)
+        physicsWorld.contactDelegate = self
         
         //Character Motion
         if motionManager.deviceMotionAvailable {
@@ -66,32 +85,13 @@ class GameScene: SKScene {
         }
         
         //Add Projectiles
-        runAction(SKAction.repeatActionForever(
-            SKAction.sequence([
-                SKAction.runBlock(projectileFlightCalc),
-                SKAction.waitForDuration(difficulty)
-                ])
-            ))
+        runAction(SKAction.repeatActionForever(SKAction.sequence([SKAction.runBlock(projectileFlightCalc), SKAction.waitForDuration(difficulty)])), withKey: "projectileAction")
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        /* Called when a touch begins */
         
-        for touch in touches {
-            /*let location = touch.locationInNode(self)
-            
-            let sprite = SKSpriteNode(imageNamed:"Spaceship")
-            
-            sprite.xScale = 0.5
-            sprite.yScale = 0.5
-            sprite.position = location
-            
-            let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
-            
-            sprite.runAction(SKAction.repeatActionForever(action))
-            
-            self.addChild(sprite)*/
-        }
+        //for touch in touches { }
     }
    
     override func update(currentTime: CFTimeInterval) {
@@ -105,7 +105,9 @@ class GameScene: SKScene {
         var seconds = (timeForScoreMili/100) % 60
         var minutes = (timeForScoreMili/100) / 60
         
-        scoreLabel.text = String(format: "%02d.%02d.%02d", minutes, seconds, miliForLabel)
+        scoreLabelString = String(format: "%02d.%02d.%02d", minutes, seconds, miliForLabel)
+        
+        scoreLabel.text = scoreLabelString
     }
     
     func getAttitudeData(attitude:CMAttitude) {
@@ -185,10 +187,46 @@ class GameScene: SKScene {
         
         addChild(projectile)
         
+        projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.height/2)
+        projectile.physicsBody?.dynamic = true
+        projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile //What category the projectile belongs to
+        projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Character //What category it interacts with
+        projectile.physicsBody?.collisionBitMask = PhysicsCategory.None //What category bounces off of it
+        projectile.physicsBody?.usesPreciseCollisionDetection = true
+        
         let actionMove = SKAction.moveTo(CGPointMake(size.width + projectile.size.width, endY), duration: projectileSpeed)
         let actionMoveDone = SKAction.removeFromParent()
         projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
 
+    }
+    
+    //Called when the player is hit by a projectile
+    func playerHitByProjectile(projectile:SKSpriteNode, character:SKSpriteNode) {
+        print("Hit")
+        projectile.removeFromParent()
+        character.removeFromParent()
+        self.removeAllChildren()
+        self.removeActionForKey("projectileAction")
+    }
+    
+    func didBeginContact(contact: SKPhysicsContact) {
+        
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        //Checks to see if 2 physics bodies collided
+        if ((firstBody.categoryBitMask & PhysicsCategory.Character != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Projectile != 0)) {
+            playerHitByProjectile(firstBody.node as! SKSpriteNode, character: secondBody.node as! SKSpriteNode)
+        }
+        
     }
     
     func randRange (lower: Int , upper: Int) -> Int {
